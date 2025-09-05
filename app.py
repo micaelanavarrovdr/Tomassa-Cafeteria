@@ -8,8 +8,8 @@ app.secret_key = "clave_secreta_flask"
 
 CONNECTION_STRING = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=DESKTOP-ELU753R\\SQLEXPRESS;"
-    "DATABASE=TomassaCafeteria;"
+    "SERVER=nameServer;"
+    "DATABASE=nameDB;"
     "Trusted_Connection=yes;"
 )
 
