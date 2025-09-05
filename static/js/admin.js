@@ -1,21 +1,17 @@
 let currentEditId = null;
-let products = JSON.parse(localStorage.getItem("products")) || [
-  { id: 1, name: "Americano", category: "cafe", description: "Café espresso con agua caliente, intenso y aromático", price: 3.5, image: "/americano-coffee-cup.jpg" },
-  { id: 2, name: "Cappuccino", category: "cafe", description: "Espresso con leche vaporizada y espuma cremosa", price: 4.25, image: "/cappuccino-coffee-with-foam-art.jpg" },
-  { id: 3, name: "Frappé de Vainilla", category: "bebidas", description: "Bebida helada con café, leche y sirope de vainilla", price: 5.75, image: "/vanilla-frappe-iced-coffee.jpg" },
-  { id: 4, name: "Cheesecake de Fresa", category: "postres", description: "Delicioso cheesecake con mermelada de fresa fresca", price: 4.5, image: "/strawberry-cheesecake-slice.png" },
-  { id: 5, name: "Croissant de Almendra", category: "snacks", description: "Croissant artesanal relleno de crema de almendra", price: 3.25, image: "/almond-croissant.png" },
-  { id: 6, name: "Latte Macchiato", category: "cafe", description: "Leche vaporizada con espresso y un toque de caramelo", price: 4.75, image: "/latte-macchiato-coffee-layers.jpg" }
-];
+let products = JSON.parse(localStorage.getItem("products")) || [];
 
 document.addEventListener("DOMContentLoaded", loadAdminProducts);
-document.getElementById("productForm").addEventListener("submit", handleProductSubmit);
+// COMENTADO: Esta línea evita que el formulario se envíe al servidor
+// document.getElementById("productForm").addEventListener("submit", handleProductSubmit);
 
 function loadAdminProducts() {
+  // Esta función puede quedarse para mostrar productos existentes
+  // pero debería cargar desde el servidor, no desde localStorage
   const adminProducts = document.getElementById("adminProducts");
   adminProducts.innerHTML = products.map(product => `
     <div class="admin-product-item">
-      <img src="${product.image}" alt="${product.name}" class="admin-product-image">
+      <img src="data:image/jpeg;base64,${product.image}" alt="${product.name}" class="admin-product-image">
       <div class="admin-product-info">
         <h4>${product.name}</h4>
         <p>${product.description}</p>
@@ -28,49 +24,19 @@ function loadAdminProducts() {
       </div>
     </div>
   `).join("");
-  localStorage.setItem("products", JSON.stringify(products));
 }
 
 function getCategoryName(category) {
   return { cafe: "Café", bebidas: "Bebidas", postres: "Postres", snacks: "Snacks" }[category] || category;
 }
 
+// COMENTADO: Esta función impide el envío al servidor
+/*
 function handleProductSubmit(e) {
-  e.preventDefault();
-  const fileInput = document.getElementById("productImage");
-  const file = fileInput.files[0];
-
-  if (!file) {
-    alert("Debes seleccionar una imagen");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const formData = {
-      name: document.getElementById("productName").value,
-      category: document.getElementById("productCategory").value,
-      description: document.getElementById("productDescription").value,
-      price: parseFloat(document.getElementById("productPrice").value),
-      image: event.target.result // base64 de la imagen
-    };
-
-    if (currentEditId) {
-      const index = products.findIndex(p => p.id === currentEditId);
-      products[index] = { ...products[index], ...formData };
-      currentEditId = null;
-      document.getElementById("cancelEdit").style.display = "none";
-    } else {
-      products.push({ id: Date.now(), ...formData });
-    }
-
-    document.getElementById("productForm").reset();
-    loadAdminProducts();
-    alert("Producto guardado exitosamente");
-  };
-
-  reader.readAsDataURL(file);
+  e.preventDefault(); // ¡ESTO IMPIDE QUE SE ENVÍE AL SERVIDOR!
+  // ... resto del código que solo guarda en localStorage
 }
+*/
 
 function editProduct(id) {
   const product = products.find(p => p.id === id);
@@ -80,7 +46,7 @@ function editProduct(id) {
   document.getElementById("productCategory").value = product.category;
   document.getElementById("productDescription").value = product.description;
   document.getElementById("productPrice").value = product.price;
-  document.getElementById("productImage").value = product.image;
+  // Nota: No puedes restaurar el archivo de imagen en un input file
   document.getElementById("cancelEdit").style.display = "inline-block";
 }
 
@@ -94,8 +60,29 @@ function deleteProduct(id) {
   if (confirm("¿Deseas eliminar este producto?")) {
     products = products.filter(p => p.id !== id);
     loadAdminProducts();
+    // Aquí deberías hacer una petición al servidor para eliminar de la BD
   }
 }
+
+// Preview de imagen antes de subir
+const productImageInput = document.getElementById("productImage");
+const imagePreview = document.getElementById("imagePreview");
+
+productImageInput.addEventListener("change", function () {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imagePreview.src = e.target.result; // Mostrar la imagen
+      imagePreview.style.display = "block"; // Hacer visible la imagen
+    }
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+  }
+});
+
 
 function logout() {
   window.location.href = "/logout";
