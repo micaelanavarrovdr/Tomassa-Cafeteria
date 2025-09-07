@@ -33,13 +33,56 @@
                     <button type="submit" class="btn-primary">Agregar Producto</button>
                 </form>
 
-            </div> <!-- Gestionar Productos -->
+            </div>
+            <!-- Sección: Gestionar Productos -->
             <div class="admin-section">
                 <h3>Gestionar Productos</h3>
-                <div class="admin-products" id="adminProducts"> <!-- Productos cargados por JS --> </div>
+                <div class="admin-products" id="adminProducts">
+                    {% for product in productos %}
+                    <div class="admin-product-item">
+                        <img src="data:image/jpeg;base64,{{ product.imagen }}" alt="{{ product.nombre }}"
+                            class="admin-product-image">
+                        <div class="admin-product-info">
+                            <h4>{{ product.nombre }}</h4>
+                            <p>{{ product.descripcion }}</p>
+                            <p><strong>Categoría:</strong> {{ product.categoria }}</p>
+                            <div class="admin-product-price">$ {{ product.precio }}</div>
+                        </div>
+                        <div class="admin-product-actions">
+                            <button class="btn-edit"
+                                onclick="openEditForm({{ product.idProducto }}, '{{ product.nombre }}', '{{ product.descripcion }}', {{ product.precio }}, {{ product.idCategoria }}, '{{ product.imagen }}')">Editar</button>
+                            <button class="btn-delete"
+                                onclick="deleteProduct({{ product.idProducto }})">Eliminar</button>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
+
         </div>
     </div>
+
+    <div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditForm()">&times;</span>
+        <h3>Editar Producto</h3>
+        <form id="editProductForm" method="POST" enctype="multipart/form-data">
+            <input type="text" id="editName" name="name" required>
+            <select id="editCategory" name="category" required>
+                {% for cat in categorias %}
+                <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
+                {% endfor %}
+            </select>
+            <textarea id="editDescription" name="description" required></textarea>
+            <input type="number" id="editPrice" name="price" step="0.01" required>
+            <input type="file" id="editImage" name="image" accept="image/*">
+            <img id="editImagePreview" src="" alt="Vista previa" style="display:none; max-width:200px; margin-top:10px;">
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
     <script src="/static/js/admin.js"></script>
 </body>
 

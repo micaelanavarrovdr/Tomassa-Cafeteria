@@ -1,3 +1,4 @@
+# import hashlib # se necesita para hashing de contraseñas
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import pyodbc
 import hashlib
@@ -8,13 +9,26 @@ app.secret_key = "clave_secreta_flask"
 
 CONNECTION_STRING = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=nameServer;"
-    "DATABASE=nameDB;"
+    "SERVER=DESKTOP-VJVKFMM\\SQLEXPRESS01;"
+    "DATABASE=TomassaCafeteria;"
     "Trusted_Connection=yes;"
 )
 
 def get_connection():
     return pyodbc.connect(CONNECTION_STRING)
+
+""" # insertar un usuario
+username = "user"
+password = "pass"
+password_hash = hashlib.sha256(password.encode()).hexdigest().upper()
+
+conn = get_connection()
+cursor = conn.cursor()
+cursor.execute("INSERT INTO Usuarios (username, passwordHash) VALUES (?, ?)", username, password_hash)
+conn.commit()
+conn.close()
+print("Usuario admin insertado correctamente")
+""" 
 
 @app.route("/")
 def index():
@@ -96,6 +110,45 @@ def add_product():
         flash("Producto agregado exitosamente")
     except Exception as e:
         flash(f"Error al agregar producto: {str(e)}")
+    finally:
+        conn.close()
+    
+    return redirect(url_for("admin"))
+
+@app.route("/update_product/<int:product_id>", methods=["POST"])
+def update_product(product_id):
+    if "username" not in session:
+        flash("Debes iniciar sesión")
+        return redirect(url_for("index"))
+    
+    name = request.form.get("name")
+    category = request.form.get("category")
+    description = request.form.get("description")
+    price = request.form.get("price")
+    image_file = request.files.get("image")
+    
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        if image_file and image_file.filename != "":
+            image_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+            cursor.execute("""
+                UPDATE Productos
+                SET nombre=?, descripcion=?, precio=?, idCategoria=?, imagen=?
+                WHERE idProducto=?
+            """, name, description, float(price), int(category), image_base64, product_id)
+        else:
+            cursor.execute("""
+                UPDATE Productos
+                SET nombre=?, descripcion=?, precio=?, idCategoria=?
+                WHERE idProducto=?
+            """, name, description, float(price), int(category), product_id)
+        
+        conn.commit()
+        flash("Producto actualizado correctamente")
+    except Exception as e:
+        flash(f"Error al actualizar producto: {str(e)}")
     finally:
         conn.close()
     
