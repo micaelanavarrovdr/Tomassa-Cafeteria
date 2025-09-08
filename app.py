@@ -9,10 +9,11 @@ app.secret_key = "clave_secreta_flask"
 
 CONNECTION_STRING = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=DESKTOP-VJVKFMM\\SQLEXPRESS01;"
+    "SERVER=nameServer;"
     "DATABASE=TomassaCafeteria;"
     "Trusted_Connection=yes;"
 )
+
 
 def get_connection():
     return pyodbc.connect(CONNECTION_STRING)
@@ -28,7 +29,7 @@ cursor.execute("INSERT INTO Usuarios (username, passwordHash) VALUES (?, ?)", us
 conn.commit()
 conn.close()
 print("Usuario admin insertado correctamente")
-""" 
+"""
 
 @app.route("/")
 def index():
@@ -168,6 +169,34 @@ def delete_product(product_id):
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Endpoint para obtener productos en formato JSON
+@app.route("/api/productos")
+def get_products():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT p.idProducto, p.nombre, p.descripcion, p.precio, 
+               c.nombre as categoria, p.imagen
+        FROM Productos p
+        INNER JOIN Categorias c ON p.idCategoria = c.idCategoria
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+
+    # Convertir resultados a lista de dicts
+    productos = []
+    for r in rows:
+        productos.append({
+            "id": r.idProducto,
+            "name": r.nombre,
+            "description": r.descripcion,
+            "price": float(r.precio),
+            "category": r.categoria.lower(),  # ej: "cafe"
+            # Si guardás imagen en base64:
+            "image": f"data:image/png;base64,{r.imagen}" if r.imagen else "/static/img/default.png"
+        })
+    return jsonify(productos)
 
 @app.route("/logout")
 def logout():

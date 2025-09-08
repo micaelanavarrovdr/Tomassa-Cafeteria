@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Café Verde</title>
     <link rel="stylesheet" href="/static/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -49,10 +50,14 @@
                             <div class="admin-product-price">$ {{ product.precio }}</div>
                         </div>
                         <div class="admin-product-actions">
-                            <button class="btn-edit"
-                                onclick="openEditForm({{ product.idProducto }}, '{{ product.nombre }}', '{{ product.descripcion }}', {{ product.precio }}, {{ product.idCategoria }}, '{{ product.imagen }}')">Editar</button>
+                            <button class="btn-edit" data-id="{{ product.idProducto }}" data-name={{
+                                product.nombre|tojson }} data-description={{ product.descripcion|tojson }}
+                                data-price="{{ product.precio }}" data-category="{{ product.idCategoria }}"
+                                data-image="{{ product.imagen }}">Editar</button>
+
                             <button class="btn-delete"
-                                onclick="deleteProduct({{ product.idProducto }})">Eliminar</button>
+                                onclick="deleteProduct('{{ product.idProducto }}')">Eliminar</button>
+
                         </div>
 
                     </div>
@@ -64,24 +69,25 @@
     </div>
 
     <div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditForm()">&times;</span>
-        <h3>Editar Producto</h3>
-        <form id="editProductForm" method="POST" enctype="multipart/form-data">
-            <input type="text" id="editName" name="name" required>
-            <select id="editCategory" name="category" required>
-                {% for cat in categorias %}
-                <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
-                {% endfor %}
-            </select>
-            <textarea id="editDescription" name="description" required></textarea>
-            <input type="number" id="editPrice" name="price" step="0.01" required>
-            <input type="file" id="editImage" name="image" accept="image/*">
-            <img id="editImagePreview" src="" alt="Vista previa" style="display:none; max-width:200px; margin-top:10px;">
-            <button type="submit" class="btn-primary">Guardar Cambios</button>
-        </form>
+        <div class="modal-content">
+            <span class="close" onclick="closeEditForm()">&times;</span>
+            <h3>Editar Producto</h3>
+            <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                <input type="text" id="editName" name="name" required>
+                <select id="editCategory" name="category" required>
+                    {% for cat in categorias %}
+                    <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <textarea id="editDescription" name="description" required></textarea>
+                <input type="number" id="editPrice" name="price" step="0.01" required>
+                <input type="file" id="editImage" name="image" accept="image/*">
+                <img id="editImagePreview" src="" alt="Vista previa"
+                    style="display:none; max-width:200px; margin-top:10px;">
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
     </div>
-</div>
 
     <script src="/static/js/admin.js"></script>
 </body>

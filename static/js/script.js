@@ -1,19 +1,20 @@
-// Sample products
-let products = [
-  { id: 1, name: "Americano", category: "cafe", description: "Café espresso con agua caliente, intenso y aromático", price: 3.5, image: "/americano-coffee-cup.jpg" },
-  { id: 2, name: "Cappuccino", category: "cafe", description: "Espresso con leche vaporizada y espuma cremosa", price: 4.25, image: "/cappuccino-coffee-with-foam-art.jpg" },
-  { id: 3, name: "Frappé de Vainilla", category: "bebidas", description: "Bebida helada con café, leche y sirope de vainilla", price: 5.75, image: "/vanilla-frappe-iced-coffee.jpg" },
-  { id: 4, name: "Cheesecake de Fresa", category: "postres", description: "Delicioso cheesecake con mermelada de fresa fresca", price: 4.5, image: "/strawberry-cheesecake-slice.png" },
-  { id: 5, name: "Croissant de Almendra", category: "snacks", description: "Croissant artesanal relleno de crema de almendra", price: 3.25, image: "/almond-croissant.png" },
-  { id: 6, name: "Latte Macchiato", category: "cafe", description: "Leche vaporizada con espresso y un toque de caramelo", price: 4.75, image: "/latte-macchiato-coffee-layers.jpg" }
-];
+let products = [];
 
 // Inicialización
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchProducts();   // 🔹 primero traemos desde backend
   loadProducts();
   setupEventListeners();
 });
 
+async function fetchProducts() {
+  try {
+    const res = await fetch("/api/productos");
+    products = await res.json();
+  } catch (err) {
+    console.error("Error cargando productos:", err);
+  }
+}
 function setupEventListeners() {
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", function () {

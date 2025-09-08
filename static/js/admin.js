@@ -1,3 +1,17 @@
+document.querySelectorAll('.btn-edit').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    const name = btn.dataset.name;
+    const description = btn.dataset.description;
+    const price = btn.dataset.price;
+    const categoryId = btn.dataset.category;
+    const imageBase64 = btn.dataset.image;
+    
+    openEditForm(id, name, description, price, categoryId, imageBase64);
+  });
+});
+
+
 // ========================
 // Preview de imagen al agregar producto
 // ========================
