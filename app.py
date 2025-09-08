@@ -9,7 +9,7 @@ app.secret_key = "clave_secreta_flask"
 
 CONNECTION_STRING = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=nameServer;"
+    "SERVER=serverName;"
     "DATABASE=TomassaCafeteria;"
     "Trusted_Connection=yes;"
 )
@@ -33,7 +33,17 @@ print("Usuario admin insertado correctamente")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Traer categorías desde la base de datos
+    cursor.execute("SELECT idCategoria, nombre FROM Categorias")
+    categorias = cursor.fetchall()
+    
+    conn.close()
+    
+    return render_template("index.html", categorias=categorias)
+
 
 @app.route("/admin")
 def admin():

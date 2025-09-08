@@ -39,11 +39,11 @@
             <!-- Category Filters -->
             <div class="category-filters">
                 <button class="filter-btn active" data-category="all">Todos</button>
-                <button class="filter-btn" data-category="cafe">Café</button>
-                <button class="filter-btn" data-category="bebidas">Bebidas</button>
-                <button class="filter-btn" data-category="postres">Postres</button>
-                <button class="filter-btn" data-category="snacks">Snacks</button>
+                {% for cat in categorias %}
+                <button class="filter-btn" data-category="{{ cat.nombre | lower }}">{{ cat.nombre }}</button>
+                {% endfor %}
             </div>
+
 
             <!-- Products Grid -->
             <div class="products-grid" id="productsGrid">
