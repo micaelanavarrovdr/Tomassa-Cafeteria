@@ -12,29 +12,54 @@
 <body>
     <div id="adminPanel" class="admin-panel">
         <div class="admin-header">
-            <h2>Panel de Administración</h2> <button onclick="logout()" class="btn-secondary">Cerrar Sesión</button>
+            <h2>Panel de Administración</h2>
+            <div>
+                <button onclick="window.location.href='/report'" class="btn-primary">Estadisticas</button>
+                <button onclick="logout()" class="btn-secondary">Cerrar Sesión</button>
+            </div>
         </div>
+
         <div class="admin-content"> <!-- Agregar Producto -->
+            <!-- Agregar Producto -->
             <div class="admin-section">
                 <h3>Agregar Nuevo Producto</h3>
                 <form id="productForm" method="POST" action="/add_product" enctype="multipart/form-data">
-                    <input type="text" id="productName" name="name" required>
-                    <select id="productCategory" name="category" required>
-                        <option value="">Selecciona una categoría</option>
-                        {% for cat in categorias %}
-                        <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                    <textarea id="productDescription" name="description" required></textarea>
-                    <input type="number" id="productPrice" name="price" step="0.01" required>
-                    <input type="file" id="productImage" name="image" accept="image/*" required>
-                    <img id="imagePreview" src="" alt="Vista previa"
-                        style="display:none; max-width:200px; margin-top:10px;">
+                    <div class="form-group">
+                        <label for="productName">Nombre</label>
+                        <input type="text" id="productName" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Categoría</label>
+                        <select id="productCategory" name="category" required>
+                            <option value="">Selecciona una categoría</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productDescription">Descripción</label>
+                        <textarea id="productDescription" name="description" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productPrice">Precio</label>
+                        <input type="number" id="productPrice" name="price" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productImage">Seleccionar Imagen</label>
+                        <input type="file" id="productImage" name="image" accept="image/*" required>
+                        <img id="imagePreview" src="" alt="Vista previa"
+                            style="display:none; max-width:200px; margin-top:10px;">
+                    </div>
 
                     <button type="submit" class="btn-primary">Agregar Producto</button>
                 </form>
-
             </div>
+
             <!-- Sección: Gestionar Productos -->
             <div class="admin-section">
                 <h3>Gestionar Productos</h3>
@@ -49,7 +74,7 @@
                             <p><strong>Categoría:</strong> {{ product.categoria }}</p>
                             <div class="admin-product-price">$ {{ product.precio }}</div>
                         </div>
-                        <div class="admin-product-actions">
+                         <div class="admin-product-actions">
                             <button class="btn-edit" data-id="{{ product.idProducto }}" data-name={{
                                 product.nombre|tojson }} data-description={{ product.descripcion|tojson }}
                                 data-price="{{ product.precio }}" data-category="{{ product.idCategoria }}"
@@ -73,21 +98,43 @@
             <span class="close" onclick="closeEditForm()">&times;</span>
             <h3>Editar Producto</h3>
             <form id="editProductForm" method="POST" enctype="multipart/form-data">
-                <input type="text" id="editName" name="name" required>
-                <select id="editCategory" name="category" required>
-                    {% for cat in categorias %}
-                    <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
-                    {% endfor %}
-                </select>
-                <textarea id="editDescription" name="description" required></textarea>
-                <input type="number" id="editPrice" name="price" step="0.01" required>
-                <input type="file" id="editImage" name="image" accept="image/*">
-                <img id="editImagePreview" src="" alt="Vista previa"
-                    style="display:none; max-width:200px; margin-top:10px;">
+
+                <div class="form-group">
+                    <label for="editName">Nombre</label>
+                    <input type="text" id="editName" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Seleccionar Categoría</label>
+                    <select id="editCategory" name="category" required>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.idCategoria }}">{{ cat.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Descripción</label>
+                    <textarea id="editDescription" name="description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPrice">Precio</label>
+                    <input type="number" id="editPrice" name="price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editImage">Seleccionar Imagen</label>
+                    <input type="file" id="editImage" name="image" accept="image/*">
+                    <img id="editImagePreview" src="" alt="Vista previa"
+                        style="display:none; max-width:200px; margin-top:10px;">
+                </div>
+
                 <button type="submit" class="btn-primary">Guardar Cambios</button>
             </form>
         </div>
     </div>
+
 
     <script src="/static/js/admin.js"></script>
 </body>

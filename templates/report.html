@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Café Verde</title>
+    <link rel="stylesheet" href="/static/css/report.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <a href="{{ url_for('admin') }}" class="btn-back">Volver</a>
+        <h1>Reporte de Productos por Categoría</h1>
+
+        <h2>Gráfico</h2>
+        <div class="chart-container">
+            <img src="data:image/png;base64,{{ chart }}" alt="Gráfico de Productos">
+        </div>
+
+        <h2>Tabla</h2>
+        <div class="table-container">
+            {{ table | safe }}
+        </div>
+    </div>
+</body>
+
+
+</html>

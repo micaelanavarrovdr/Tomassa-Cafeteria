@@ -3,6 +3,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import pyodbc
 import hashlib
 import base64
+import pandas as pd
+import matplotlib.pyplot as plt
+import io
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_flask"
@@ -13,7 +16,6 @@ CONNECTION_STRING = (
     "DATABASE=TomassaCafeteria;"
     "Trusted_Connection=yes;"
 )
-
 
 def get_connection():
     return pyodbc.connect(CONNECTION_STRING)
@@ -207,6 +209,47 @@ def get_products():
             "image": f"data:image/png;base64,{r.imagen}" if r.imagen else "/static/img/default.png"
         })
     return jsonify(productos)
+
+    
+@app.route("/report")
+def report():
+    if "username" not in session:
+        flash("Debes iniciar sesión")
+        return redirect(url_for("index"))
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT c.nombre as categoria, COUNT(p.idProducto) as cantidad
+        FROM Productos p
+        INNER JOIN Categorias c ON p.idCategoria = c.idCategoria
+        GROUP BY c.nombre
+    """)
+    
+    rows = [(r[0], r[1]) for r in cursor.fetchall()]
+    conn.close()
+    
+    df = pd.DataFrame(rows, columns=["Categoria", "Cantidad"])
+    
+    # Crear gráfico
+    fig, ax = plt.subplots(figsize=(8,5))
+    df.plot(kind='bar', x='Categoria', y='Cantidad', legend=False, ax=ax, color='skyblue')
+
+    # Forzar eje Y a números enteros
+    from matplotlib.ticker import MaxNLocator
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    ax.set_ylabel("Cantidad de productos")
+    ax.set_title("Productos por categoría")
+    
+    buf = io.BytesIO()
+    plt.tight_layout()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    buf.close()
+    
+    return render_template("report.html", chart=img_base64, table=df.to_html(index=False))
 
 @app.route("/logout")
 def logout():
