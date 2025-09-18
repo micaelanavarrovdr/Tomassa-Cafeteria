@@ -1,157 +1,84 @@
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: "Lato", sans-serif;
-  line-height: 1.6;
-  color: #1e3932;
-  background-color: #f7f7f7;
-  padding-top: 80px; /* espacio para el header */
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #1e3932;
+    margin: 0;
+    padding: 0;
 }
 
-/* Header */
-.header {
-  background-color: #00704a;
-  color: white;
-  padding: 1rem 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.header .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-}
-
-.header a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  background: #005a3c;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: background 0.3s ease;
-}
-
-.header a:hover {
-  background: #00432d;
-}
-
-/* Contenido principal */
 .container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 0 20px;
-}
-
-h2 {
-  margin: 2rem 0 1rem;
-  font-size: 1.6rem;
-  color: #00704a;
-  font-weight: 600;
-}
-
-img {
-  max-width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin-top: 1rem;
-}
-
-/* Tabla del reporte */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-table th,
-table td {
-  padding: 0.8rem 1rem;
-  text-align: left;
-}
-
-table th {
-  background: #00704a;
-  color: white;
-  font-weight: 600;
-}
-
-table tr:nth-child(even) {
-  background: #f2f2f2;
-}
-
-/* Centrar contenido */
-.container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 20px;
-  text-align: center; /* centra títulos y elementos principales */
-}
-
-h1 {
-  font-size: 2rem;
-  color: #1e3932;
-  margin-bottom: 1.5rem;
-}
-
-.chart-container {
-  display: flex;
-  justify-content: center;
-  margin: 1.5rem 0;
-}
-
-.table-container {
-  margin-top: 2rem;
-  text-align: left; /* que la tabla siga alineada correctamente */
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 /* Botón volver */
-.btn-back {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  background: #00704a;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.3s ease;
+.btn-volver {
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    background-color: #1e3932;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.btn-back:hover {
-  background: #005a3c;
+.btn-volver:hover {
+    background-color: #06b385;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  h2 {
-    font-size: 1.3rem;
-  }
+/* Productos destacados */
+.destacados {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
 
-  table th,
-  table td {
-    font-size: 0.9rem;
-    padding: 0.6rem;
-  }
+.producto {
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 45%;
+    min-width: 200px;
+}
+
+.producto.caro {
+    background-color: #ffe0e0;
+    color: #b91c1c;
+    font-size: 1.2em;
+}
+
+.producto.barato {
+    background-color: #e0f7ff;
+    color: #0bb386;
+    font-size: 1.2em;
+}
+
+.producto span {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Títulos y gráficos */
+h2 {
+    text-align: center;
+    margin-top: 30px;
+}
+
+canvas {
+    margin: 20px 0;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
 }

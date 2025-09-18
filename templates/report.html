@@ -1,30 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Café Verde</title>
-    <link rel="stylesheet" href="/static/css/report.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Reporte Productos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
     <div class="container">
-        <a href="{{ url_for('admin') }}" class="btn-back">Volver</a>
-        <h1>Reporte de Productos por Categoría</h1>
+        <!-- Botón volver -->
+        <a href="{{ url_for('admin') }}" class="btn-volver">Volver</a>
 
-        <h2>Gráfico</h2>
-        <div class="chart-container">
-            <img src="data:image/png;base64,{{ chart }}" alt="Gráfico de Productos">
+        <!-- Productos destacados -->
+        <div class="destacados">
+            <div class="producto caro">
+                <span>Producto mayor valor:</span>
+                <strong>{{ mas_caro['producto'] }} - ${{ mas_caro['precio'] }}</strong>
+            </div>
+            <div class="producto barato">
+                <span>Producto menor valor:</span>
+                <strong>{{ mas_barato['producto'] }} - ${{ mas_barato['precio'] }}</strong>
+            </div>
         </div>
 
-        <h2>Tabla</h2>
-        <div class="table-container">
-            {{ table | safe }}
-        </div>
+        <!-- Gráficos -->
+        <h2>Cantidad por categoría</h2>
+        <canvas id="cantidadChart"></canvas>
+
+        <h2>Precio promedio por categoría</h2>
+        <canvas id="promedioChart"></canvas>
+
+        <!-- Datos JSON ocultos -->
+        <script id="cantidadData" type="application/json">
+            {{ cantidad_por_categoria | tojson }}
+        </script>
+        <script id="promedioData" type="application/json">
+            {{ promedio_precio_categoria | tojson }}
+        </script>
     </div>
+
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 </body>
-
-
 </html>

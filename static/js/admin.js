@@ -1,15 +1,16 @@
 document.querySelectorAll('.btn-edit').forEach(btn => {
   btn.addEventListener('click', () => {
     const id = btn.dataset.id;
-    const name = btn.dataset.name;
-    const description = btn.dataset.description;
+    const name = JSON.parse(btn.dataset.name);           // 🔹 Parse JSON
+    const description = JSON.parse(btn.dataset.description); // 🔹 Parse JSON
     const price = btn.dataset.price;
     const categoryId = btn.dataset.category;
     const imageBase64 = btn.dataset.image;
-    
+
     openEditForm(id, name, description, price, categoryId, imageBase64);
   });
 });
+
 
 
 // ========================
@@ -34,7 +35,7 @@ productImageInput.addEventListener("change", function () {
 });
 
 // ========================
-// Función para eliminar producto vía AJAX
+// Función para eliminar producto
 // ========================
 function deleteProduct(id) {
   if (confirm("¿Deseas eliminar este producto?")) {
@@ -42,7 +43,7 @@ function deleteProduct(id) {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          location.reload(); // Recarga la página para actualizar la lista
+          location.reload();
         } else {
           alert("Error al eliminar: " + data.error);
         }
@@ -103,6 +104,22 @@ document.getElementById("productForm").addEventListener("reset", () => {
   form.action = "/add_product";
   form.querySelector("button[type='submit']").textContent = "Agregar Producto";
 });
+
+// Filtrar productos por categoría
+const filterCategory = document.getElementById("filterCategory");
+const adminProducts = document.getElementById("adminProducts");
+
+filterCategory.addEventListener("change", () => {
+    const selectedCategory = filterCategory.value; // puede ser "all" o idCategoria
+    document.querySelectorAll(".admin-product-item").forEach(item => {
+        if (selectedCategory === "all" || item.dataset.category === selectedCategory) {
+            item.style.display = "flex"; // o "block", según tu diseño
+        } else {
+            item.style.display = "none";
+        }
+    });
+});
+
 
 // ========================
 // Logout

@@ -5,7 +5,9 @@ import hashlib
 import base64
 import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import io
+import json
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_flask"
@@ -196,60 +198,60 @@ def get_products():
     rows = cursor.fetchall()
     conn.close()
 
-    # Convertir resultados a lista de dicts
     productos = []
     for r in rows:
         productos.append({
             "id": r.idProducto,
-            "name": r.nombre,
-            "description": r.descripcion,
+            "name": str(r.nombre),
+            "description": str(r.descripcion),
             "price": float(r.precio),
-            "category": r.categoria.lower(),  # ej: "cafe"
-            # Si guardás imagen en base64:
+            "category": str(r.categoria).lower(),
             "image": f"data:image/png;base64,{r.imagen}" if r.imagen else "/static/img/default.png"
         })
-    return jsonify(productos)
 
-    
+    # 🔹 evitar escapes Unicode (\u00e9 → é)
+    return app.response_class(
+        response=json.dumps(productos, ensure_ascii=False),
+        mimetype="application/json"
+    )
+
 @app.route("/report")
-def report():
+def analytics():
     if "username" not in session:
-        flash("Debes iniciar sesión")
         return redirect(url_for("index"))
     
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT c.nombre as categoria, COUNT(p.idProducto) as cantidad
+        SELECT p.nombre as producto, p.precio, c.nombre as categoria
         FROM Productos p
         INNER JOIN Categorias c ON p.idCategoria = c.idCategoria
-        GROUP BY c.nombre
     """)
-    
-    rows = [(r[0], r[1]) for r in cursor.fetchall()]
+    rows = cursor.fetchall()
     conn.close()
-    
-    df = pd.DataFrame(rows, columns=["Categoria", "Cantidad"])
-    
-    # Crear gráfico
-    fig, ax = plt.subplots(figsize=(8,5))
-    df.plot(kind='bar', x='Categoria', y='Cantidad', legend=False, ax=ax, color='skyblue')
 
-    # Forzar eje Y a números enteros
-    from matplotlib.ticker import MaxNLocator
-    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    # Convertir a lista de tuplas para pandas
+    data = [(r.producto, r.precio, r.categoria) for r in rows]
+    df = pd.DataFrame(data, columns=["producto", "precio", "categoria"])
 
-    ax.set_ylabel("Cantidad de productos")
-    ax.set_title("Productos por categoría")
-    
-    buf = io.BytesIO()
-    plt.tight_layout()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-    buf.close()
-    
-    return render_template("report.html", chart=img_base64, table=df.to_html(index=False))
+    # Convertir precios a float para evitar errores de tipo
+    df['precio'] = pd.to_numeric(df['precio'], errors='coerce')  # convierte strings a float, NaN si no puede
+
+    # Analisis:
+    mas_caro = df.loc[df['precio'].idxmax()]
+    mas_barato = df.loc[df['precio'].idxmin()]
+    cantidad_por_categoria = df.groupby('categoria').size().to_dict()
+    promedio_precio_categoria = df.groupby('categoria')['precio'].mean().round(0).astype(int).to_dict()  # redondea a entero
+
+    # Pasar resultados al template
+    return render_template(
+        "report.html",
+        mas_caro=mas_caro,
+        mas_barato=mas_barato,
+        cantidad_por_categoria=cantidad_por_categoria,
+        promedio_precio_categoria=promedio_precio_categoria
+    )
+
 
 @app.route("/logout")
 def logout():
